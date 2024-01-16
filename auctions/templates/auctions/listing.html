@@ -1,0 +1,81 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+{% load widget_tweaks %}
+
+    <h1 class="mb-3 ml-1 mr-1">Listing: {{ listing.title }}</h1>
+    <div class="row ml-1">
+        {% if user.is_authenticated %}
+            {% if watchlist is None %}
+            <a href="{% url 'watchlist_add' listing.id %}"><button class="btn btn-secondary border-0 mb-3 mr-1">Add to watchlist</button></a>
+            {% else %}
+            <a href="{% url 'watchlist_delete' listing.id %}"><button class="btn btn-secondary border-0 mb-3 mr-1">Delete from watchlist</button></a>
+            {% endif %}
+        
+        
+
+            {% if delete_listing is not None %}
+                <a href="{% url 'close_listing' listing.id %}"><button class="btn btn-danger border-0">Close listing</button></a>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    {% if listing.imageUrl is not None %}
+        <img src="{{listing.imageUrl}}" class="ml-1 mr-1 mb-2 mt-2" alt=""
+        style="height: auto; width: auto;">
+    {% endif %}
+    
+    <p class="h4 ml-1 mr-1 mb-0"> {{ listing.text_description }}</p>
+    <p class="h2 font-weight-bold ml-1 mr-1 mb-3 mt-0"> {{ currentbid }} $</p>
+
+    {% if user.is_authenticated %}
+        
+        <div class="form-group ml-1 mr-1">
+            <form action="{% url 'listing' listing.id %}" method="post">
+                {% csrf_token %}
+                {% render_field bid.current_bid class+="form-control mb-1" placeholder="Place your bid..."%}
+            <input type="submit" class="btn btn-primary" value="Place bid">
+            </form>
+        </div>
+
+    {% endif %}
+
+    <p class="h2 font-weight-bold mt-5">Details</p> 
+    <ul class="ml-1 mr-1 mb-5">
+        <li class="h4 mr-1">Listing created by: {{user}}</li>
+        <li class="h4 mr-1">
+            {% if listing.choice is not None %}
+            Category: {{ listing.choice.capitalize }}.
+            {% else %}
+            Category: No category listed.
+            {% endif %}
+        </li>
+
+    </ul>
+    
+    {% if user.is_authenticated %}
+    <div class="form-group ml-1 mr-1">
+        <form action="{% url 'publish_comment' listing.id %}" method="post">
+            {% csrf_token %}
+            {% render_field comment.comment class+="form-control mb-1" placeholder="Add a comment..." rows="4" maxlength="512"%}
+        <input type="submit" class="btn btn-secondary" value="Comment">
+        </form>
+    </div>    
+    {% endif %}
+
+    <!-- TODO: everything under this-->
+
+    <p class="h2">Comments:</p>
+    {% for comment in comments %}
+        <div class="container-fluid border p-3 mb-1" style="min-height: 5vh;">
+            <body class="h4">{{ comment.comment }}</body>
+        </div>
+        {% empty %}
+        <div class="container-fluid border p-3 mb-1" style="min-height: 5vh;">
+            <p class="h4">No comments yet.</p>
+        </div>
+
+    {% endfor %}
+
+{% endblock %}

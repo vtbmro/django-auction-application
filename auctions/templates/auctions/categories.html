@@ -1,0 +1,18 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h1 class="ml-3">Search by categories:</h1>
+    {% if user.is_authenticated %}
+        <ul>    
+            {% for category in categories %}
+                <a href="{% url 'category_load' category%}"><li class="h3">{{category}}</li></a>
+                <!-- Add link so it redirect to a search of -->
+            {% endfor %}
+            {% else %}
+                    <p>You need to be signed in to have a watchlist</p>
+            {% endif %}
+        </ul>
+
+   
+
+{% endblock %}
